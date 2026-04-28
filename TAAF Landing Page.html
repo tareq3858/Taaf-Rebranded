@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TAAF — Maison de Parfum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Cormorant+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  /* ============ TOKENS ============ */
+  :root {
+    --ink: #0E0B08;          /* near-black, warm */
+    --ink-2: #161210;
+    --ink-3: #221b16;
+    --bone: #F2EBDD;         /* warm cream paper */
+    --bone-soft: #E6DDC9;
+    --champagne: #C8A96A;    /* brass */
+    --champagne-light: #E2C892;
+    --champagne-deep: #8E6F3D;
+    --burgundy: #5B1A24;
+    --rose-dust: #C9A6A6;
+    --line: rgba(200,169,106,.22);
+    --serif: "Cormorant Garamond", "Times New Roman", serif;
+    --sans: "Inter", system-ui, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--ink);
+    color: var(--bone);
+    font-family: var(--sans);
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    line-height: 1.55;
+  }
+  img { display: block; max-width: 100%; }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+  /* a faint film grain to make the page feel printed, not pixel-perfect */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.96  0 0 0 0 0.92  0 0 0 0 0.86  0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    opacity: .55;
+    mix-blend-mode: overlay;
+  }
+
+  /* ============ TYPE UTILITIES ============ */
+  .display {
+    font-family: var(--serif);
+    font-weight: 400;
+    line-height: .95;
+    letter-spacing: -0.02em;
+  }
+  .eyebrow {
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: .32em;
+    text-transform: uppercase;
+    color: var(--champagne);
+  }
+  .body-soft { color: rgba(242,235,221,.7); }
+
+  /* hairline divider with center brass dot */
+  .hairline {
+    display: flex; align-items: center; justify-content: center;
+    gap: 14px;
+  }
+  .hairline::before, .hairline::after {
+    content: ""; flex: 0 0 60px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--champagne) 50%, transparent);
+  }
+  .hairline span {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--champagne);
+    box-shadow: 0 0 12px rgba(200,169,106,.6);
+  }
+
+  /* ============ NAV ============ */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 50;
+    padding: 0;
+    pointer-events: none;
+    background: transparent;
+    transition: background .3s ease, backdrop-filter .3s ease;
+  }
+  .nav.scrolled {
+    background: rgba(14,11,8,.92);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+    height: 4px;
+  }
+  .nav-bottle {
+    height: 56px; width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 14px rgba(0,0,0,.6));
+  }
+  .brand {
+    font-family: var(--serif);
+    text-align: center;
+    color: var(--bone);
+  }
+  .brand .name {
+    display: block;
+    font-weight: 500;
+    font-size: 26px;
+    letter-spacing: .42em;
+    padding-left: .42em;
+    line-height: 1;
+  }
+  .brand .sub {
+    display: block;
+    font-family: var(--sans);
+    font-size: 10px;
+    letter-spacing: .42em;
+    color: var(--bone);
+    margin-top: 6px;
+    padding-left: .42em;
+    line-height: 1;
+  }
+  .brand .est {
+    display: block;
+    font-family: var(--sans);
+    font-size: 8px;
+    letter-spacing: .5em;
+    color: var(--champagne);
+    margin-top: 6px;
+    padding-left: .5em;
+    line-height: 1;
+  }
+
+  /* hero brand logo block (replaces old h1) */
+  .hero-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 36px;
+    line-height: 1;
+  }
+  .hl-name {
+    font-family: "Cormorant SC", "Cormorant Garamond", serif;
+    font-weight: 500;
+    font-size: clamp(72px, 9vw, 132px);
+    letter-spacing: .18em;
+    color: var(--bone);
+    padding-left: .18em;
+    line-height: 1;
+  }
+  .hl-sub {
+    font-family: "Inter", sans-serif;
+    font-weight: 400;
+    font-size: clamp(20px, 1.8vw, 28px);
+    letter-spacing: .42em;
+    color: var(--bone);
+    margin-top: 22px;
+    padding-left: .42em;
+  }
+  .hl-est {
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: .42em;
+    color: var(--champagne);
+    margin-top: 14px;
+    padding-left: .42em;
+  }
+
+  /* ============ HERO ============ */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    padding: 80px 40px 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+    overflow: hidden;
+  }
+  .hero::before {
+    /* warm halo behind bottle */
+    content: "";
+    position: absolute;
+    right: -10%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 70vw; height: 70vw;
+    max-width: 900px; max-height: 900px;
+    background: radial-gradient(circle at center,
+      rgba(91,26,36,.55) 0%,
+      rgba(91,26,36,.25) 28%,
+      rgba(14,11,8,0) 60%);
+    z-index: 0;
+    pointer-events: none;
+  }
+  .hero-text { position: relative; z-index: 2; max-width: 540px; }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 14px;
+    margin-bottom: 36px;
+  }
+  .hero-eyebrow::before {
+    content: ""; width: 36px; height: 1px; background: var(--champagne);
+  }
+  .hero h1 {
+    font-size: clamp(56px, 8.5vw, 132px);
+    margin-bottom: 28px;
+    color: var(--bone);
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--champagne-light);
+    font-weight: 300;
+  }
+  .hero-lede {
+    font-family: var(--serif);
+    font-size: clamp(18px, 1.6vw, 22px);
+    font-weight: 300;
+    line-height: 1.55;
+    color: rgba(242,235,221,.78);
+    max-width: 460px;
+    margin-bottom: 44px;
+  }
+  .hero-meta {
+    display: flex; gap: 56px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+  }
+  .hero-meta .cell {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .hero-meta .label {
+    font-size: 10px; letter-spacing: .3em; text-transform: uppercase;
+    color: rgba(242,235,221,.55);
+  }
+  .hero-meta .value {
+    font-family: var(--serif); font-size: 22px; color: var(--bone);
+    font-style: italic; font-weight: 400;
+  }
+
+  .hero-bottle {
+    position: relative; z-index: 1;
+    height: 88vh;
+    max-height: 880px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .hero-bottle img {
+    height: 100%; width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 30px 80px rgba(0,0,0,.6))
+            drop-shadow(0 0 60px rgba(200,169,106,.15));
+    transform: translateX(4%);
+  }
+  .hero-tag {
+    position: absolute;
+    left: 0; bottom: 8%;
+    display: flex; align-items: center; gap: 14px;
+    z-index: 2;
+  }
+  .hero-tag .num {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 64px;
+    color: var(--champagne);
+    line-height: 1;
+  }
+  .hero-tag .info {
+    border-left: 1px solid var(--line);
+    padding-left: 14px;
+  }
+  .hero-tag .info .name {
+    font-family: var(--serif);
+    font-size: 22px; color: var(--bone);
+    letter-spacing: .02em;
+  }
+  .hero-tag .info .sub {
+    font-size: 10px; letter-spacing: .28em; text-transform: uppercase;
+    color: rgba(242,235,221,.55);
+    margin-top: 4px;
+  }
+
+  /* scroll cue */
+  .scroll-cue {
+    position: absolute;
+    bottom: 26px; right: 40px;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 10px; letter-spacing: .32em; text-transform: uppercase;
+    color: rgba(242,235,221,.55);
+    z-index: 5;
+  }
+  .scroll-cue::after {
+    content: ""; width: 1px; height: 38px;
+    background: linear-gradient(180deg, var(--champagne), transparent);
+    animation: scrollDot 2.4s ease-in-out infinite;
+    transform-origin: top;
+  }
+  @keyframes scrollDot {
+    0% { transform: scaleY(0); opacity: 0; }
+    40% { transform: scaleY(1); opacity: 1; }
+    100% { transform: scaleY(1) translateY(20px); opacity: 0; }
+  }
+
+  /* ============ MARQUEE ============ */
+  .marquee {
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+    padding: 22px 0;
+    background: var(--ink-2);
+  }
+  .marquee-track {
+    display: flex; gap: 60px;
+    white-space: nowrap;
+    animation: scroll 40s linear infinite;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 22px;
+    color: rgba(242,235,221,.5);
+  }
+  .marquee-track span { display: inline-flex; align-items: center; gap: 60px; }
+  .marquee-track span::after {
+    content: "✦"; color: var(--champagne); font-size: 14px; font-style: normal;
+  }
+  @keyframes scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* ============ SECTION HEADERS ============ */
+  .section {
+    padding: 140px 40px;
+    position: relative;
+  }
+  .section-head {
+    text-align: center;
+    margin-bottom: 80px;
+  }
+  .section-head .eyebrow { margin-bottom: 26px; }
+  .section-head h2 {
+    font-family: var(--serif);
+    font-size: clamp(44px, 6vw, 88px);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .section-head h2 em {
+    font-style: italic;
+    color: var(--champagne-light);
+    font-weight: 300;
+  }
+  .section-head p {
+    max-width: 520px;
+    margin: 26px auto 0;
+    font-family: var(--serif);
+    font-size: 19px;
+    color: rgba(242,235,221,.7);
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  /* ============ COLLECTION ============ */
+  .collection {
+    background: var(--ink);
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+  .card {
+    position: relative;
+    background: var(--ink-2);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .6s cubic-bezier(.2,.7,.2,1), border-color .4s;
+  }
+  .card:hover { border-color: rgba(200,169,106,.55); }
+  .card-stage {
+    position: relative;
+    aspect-ratio: 4/5;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .card-stage::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 60%,
+      rgba(200,169,106,.08) 0%,
+      rgba(14,11,8,0) 70%);
+  }
+  .card.rose .card-stage::before {
+    background: radial-gradient(ellipse at 50% 60%,
+      rgba(201,166,166,.18) 0%,
+      rgba(14,11,8,0) 70%);
+  }
+  .card.burgundy .card-stage::before {
+    background: radial-gradient(ellipse at 50% 60%,
+      rgba(91,26,36,.5) 0%,
+      rgba(14,11,8,0) 70%);
+  }
+  .card-stage img {
+    height: 90%; width: auto; object-fit: contain;
+    transition: transform 1.4s cubic-bezier(.2,.7,.2,1);
+    filter: drop-shadow(0 24px 50px rgba(0,0,0,.6));
+  }
+  .card:hover .card-stage img { transform: scale(1.04); }
+
+  /* index in corner */
+  .card-num {
+    position: absolute; top: 22px; left: 24px;
+    font-family: var(--serif); font-style: italic;
+    font-size: 18px; color: rgba(242,235,221,.5);
+    z-index: 2;
+  }
+  .card-tag {
+    position: absolute; top: 22px; right: 24px;
+    font-size: 9px; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--champagne);
+    border: 1px solid var(--champagne);
+    padding: 5px 10px;
+    z-index: 2;
+  }
+
+  .card-info {
+    padding: 32px 32px 36px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 18px;
+  }
+  .card-info h3 {
+    font-family: var(--serif);
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 1;
+    color: var(--bone);
+    margin-bottom: 10px;
+  }
+  .card-info .notes-line {
+    font-family: var(--serif);
+    font-style: italic;
+    color: rgba(242,235,221,.6);
+    font-size: 16px;
+  }
+  .card-cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 10px; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--champagne);
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--champagne);
+    transition: gap .3s ease;
+  }
+  .card:hover .card-cta { gap: 16px; }
+  .card-meta {
+    display: flex; gap: 24px;
+    padding: 0 32px 28px;
+    font-size: 11px; letter-spacing: .12em;
+    color: rgba(242,235,221,.5);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .card-meta .dot { color: var(--champagne); }
+  .card-meta b { color: var(--bone); font-weight: 500; }
+
+  /* ============ FEATURED — full bleed ============ */
+  .featured {
+    background: linear-gradient(180deg, #1a0a0e 0%, #2a0d14 50%, #1a0a0e 100%);
+    padding: 160px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .featured::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 75% 40%, rgba(200,169,106,.12), transparent 50%),
+      radial-gradient(circle at 20% 70%, rgba(91,26,36,.4), transparent 60%);
+    pointer-events: none;
+  }
+  .featured-inner {
+    max-width: 1280px; margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+  .featured-bottle {
+    position: relative;
+    aspect-ratio: 4/5;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .featured-bottle img {
+    height: 100%; width: auto; object-fit: contain;
+    filter: drop-shadow(0 40px 80px rgba(0,0,0,.7))
+            drop-shadow(0 0 60px rgba(200,169,106,.2));
+  }
+  .featured-text .eyebrow { margin-bottom: 24px; display: block; }
+  .featured-text h2 {
+    font-family: var(--serif);
+    font-size: clamp(52px, 6.5vw, 96px);
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    margin-bottom: 28px;
+    color: var(--bone);
+  }
+  .featured-text h2 em {
+    font-style: italic; color: var(--champagne-light); font-weight: 300;
+  }
+  .featured-quote {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 22px;
+    line-height: 1.55;
+    color: rgba(242,235,221,.78);
+    padding-left: 22px;
+    border-left: 1px solid var(--champagne);
+    margin: 36px 0 44px;
+    max-width: 480px;
+  }
+
+  /* notes pyramid */
+  .notes {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 44px;
+  }
+  .notes-row {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 28px;
+    align-items: baseline;
+    padding: 16px 0;
+    border-top: 1px solid var(--line);
+  }
+  .notes-row:last-child { border-bottom: 1px solid var(--line); }
+  .notes-row .tier {
+    font-size: 10px; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--champagne);
+  }
+  .notes-row .ingredients {
+    font-family: var(--serif);
+    font-size: 19px;
+    color: var(--bone);
+    font-weight: 300;
+  }
+
+  /* ============ MAISON / PHILOSOPHY ============ */
+  .maison {
+    padding: 160px 40px;
+    background: var(--ink);
+    position: relative;
+  }
+  .maison-inner {
+    max-width: 980px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .maison .eyebrow { display: block; margin-bottom: 30px; }
+  .maison-text {
+    font-family: var(--serif);
+    font-size: clamp(28px, 3vw, 42px);
+    font-weight: 300;
+    line-height: 1.32;
+    letter-spacing: -0.005em;
+    color: var(--bone);
+  }
+  .maison-text em {
+    font-style: italic; color: var(--champagne-light);
+  }
+  .maison-sign {
+    margin-top: 56px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .maison-sign .swash {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 32px;
+    color: var(--champagne);
+  }
+  .maison-sign .role {
+    font-size: 10px; letter-spacing: .35em; text-transform: uppercase;
+    color: rgba(242,235,221,.55);
+  }
+
+  /* triptych row of small details */
+  .pillars {
+    margin-top: 100px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+  .pillar {
+    background: var(--ink-2);
+    padding: 44px 32px;
+    text-align: left;
+  }
+  .pillar .num {
+    font-family: var(--serif); font-style: italic;
+    color: var(--champagne); font-size: 22px;
+    margin-bottom: 18px; display: block;
+  }
+  .pillar h4 {
+    font-family: var(--serif);
+    font-size: 24px; font-weight: 400; color: var(--bone);
+    margin-bottom: 12px;
+  }
+  .pillar p {
+    color: rgba(242,235,221,.65);
+    font-size: 14px; line-height: 1.65;
+  }
+
+  /* ============ FOOTER ============ */
+  footer {
+    background: var(--ink-2);
+    border-top: 1px solid var(--line);
+    padding: 100px 40px 40px;
+  }
+  .footer-inner {
+    max-width: 1280px; margin: 0 auto;
+  }
+  .footer-cta {
+    text-align: center;
+    margin-bottom: 80px;
+  }
+  .footer-cta h3 {
+    font-family: var(--serif);
+    font-size: clamp(40px, 5vw, 72px);
+    font-weight: 300;
+    line-height: 1;
+    margin: 22px 0 32px;
+  }
+  .footer-cta h3 em { font-style: italic; color: var(--champagne-light); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 14px;
+    padding: 18px 36px;
+    background: transparent;
+    color: var(--bone);
+    border: 1px solid var(--champagne);
+    font-size: 11px; letter-spacing: .32em; text-transform: uppercase;
+    transition: all .35s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn::before {
+    content: ""; position: absolute; inset: 0;
+    background: var(--champagne);
+    transform: translateY(101%);
+    transition: transform .4s cubic-bezier(.2,.7,.2,1);
+    z-index: -1;
+  }
+  .btn:hover { color: var(--ink); }
+  .btn:hover::before { transform: translateY(0); }
+  .btn .arr { transition: transform .35s; }
+  .btn:hover .arr { transform: translateX(4px); }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 60px;
+    padding-top: 60px;
+    border-top: 1px solid var(--line);
+  }
+  .footer-brand .brand { padding-left: 0; font-size: 28px; }
+  .footer-brand .brand small { padding-left: 0; text-align: left; margin-top: 6px;}
+  .footer-brand p {
+    color: rgba(242,235,221,.55);
+    font-size: 13px; line-height: 1.6;
+    margin-top: 24px; max-width: 280px;
+  }
+  .footer-col h5 {
+    font-size: 10px; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--champagne); margin-bottom: 22px;
+  }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .footer-col a {
+    color: rgba(242,235,221,.7);
+    font-size: 14px;
+    transition: color .25s;
+  }
+  .footer-col a:hover { color: var(--bone); }
+  .footer-bottom {
+    margin-top: 60px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; color: rgba(242,235,221,.45);
+    letter-spacing: .12em;
+  }
+
+  /* ============ MODAL ============ */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(10,7,5,.75);
+    backdrop-filter: blur(10px);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    opacity: 0;
+    transition: opacity .35s ease;
+  }
+  .modal-overlay.active { display: flex; opacity: 1; }
+  .modal {
+    background: var(--ink-2);
+    border: 1px solid var(--line);
+    width: 100%;
+    max-width: 1080px;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    transform: translateY(20px);
+    transition: transform .4s cubic-bezier(.2,.7,.2,1);
+  }
+  .modal-overlay.active .modal { transform: translateY(0); }
+  .modal-image {
+    position: relative;
+    background: var(--ink-3);
+    display: flex; align-items: center; justify-content: center;
+    padding: 60px 40px;
+    min-height: 500px;
+  }
+  .modal-image::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, rgba(200,169,106,.08), transparent 70%);
+  }
+  .modal-image img {
+    max-height: 480px; width: auto;
+    filter: drop-shadow(0 30px 60px rgba(0,0,0,.6));
+    position: relative;
+  }
+  .modal-body {
+    padding: 60px 50px;
+    display: flex; flex-direction: column;
+  }
+  .modal-body .label {
+    font-size: 10px; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--champagne); margin-bottom: 14px;
+  }
+  .modal-body h2 {
+    font-family: var(--serif);
+    font-size: 48px;
+    font-weight: 400;
+    line-height: 1;
+    margin-bottom: 10px;
+    color: var(--bone);
+  }
+  .modal-body h2 em { font-style: italic; color: var(--champagne-light); }
+  .modal-body .desc {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-style: italic;
+    line-height: 1.6;
+    color: rgba(242,235,221,.75);
+    font-weight: 300;
+    margin: 26px 0 32px;
+  }
+  .modal-notes {
+    display: flex; flex-direction: column; gap: 0;
+    margin-bottom: 32px;
+  }
+  .modal-notes .row {
+    display: grid; grid-template-columns: 100px 1fr;
+    gap: 20px; align-items: baseline;
+    padding: 14px 0;
+    border-top: 1px solid var(--line);
+  }
+  .modal-notes .row:last-child { border-bottom: 1px solid var(--line); }
+  .modal-notes .tier {
+    font-size: 9px; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--champagne);
+  }
+  .modal-notes .val {
+    font-family: var(--serif);
+    font-size: 17px;
+    color: var(--bone);
+  }
+  .size-row {
+    margin-bottom: 28px;
+  }
+  .size-row .label { margin-bottom: 16px; }
+  .sizes {
+    display: flex; gap: 12px;
+  }
+  .size-pill {
+    flex: 1;
+    padding: 16px 14px;
+    border: 1px solid var(--line);
+    background: transparent;
+    text-align: center;
+    cursor: pointer;
+    transition: all .25s;
+  }
+  .size-pill:hover { border-color: var(--champagne); }
+  .size-pill.active {
+    border-color: var(--champagne);
+    background: rgba(200,169,106,.06);
+  }
+  .size-pill .ml {
+    display: block;
+    font-family: var(--serif); font-size: 22px; color: var(--bone);
+    margin-bottom: 2px;
+  }
+  .size-pill .pr {
+    display: block;
+    font-size: 11px; letter-spacing: .2em;
+    color: var(--champagne);
+  }
+  .modal-cta {
+    display: flex; gap: 16px; align-items: center;
+    margin-top: auto;
+  }
+  .modal-cta .btn { flex: 1; justify-content: center; }
+  .modal-secondary {
+    flex: 0 0 auto;
+    padding: 18px 28px;
+    border: 1px solid var(--line);
+    color: rgba(242,235,221,.7);
+    font-size: 11px; letter-spacing: .28em; text-transform: uppercase;
+    transition: all .25s;
+  }
+  .modal-secondary:hover { color: var(--bone); border-color: var(--champagne); }
+  .modal-close {
+    position: absolute;
+    top: 20px; right: 20px;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--ink);
+    border: 1px solid var(--line);
+    z-index: 5;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .25s;
+  }
+  .modal-close:hover { border-color: var(--champagne); transform: rotate(90deg); }
+  .modal-close svg { width: 16px; height: 16px; stroke: var(--bone); }
+
+  /* fade-in */
+  .fade-in { opacity: 0; transform: translateY(30px); transition: opacity .9s ease, transform .9s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 980px) {
+    .nav { padding: 0; }
+    .hero {
+      grid-template-columns: 1fr;
+      padding: 80px 22px 60px;
+      min-height: auto;
+      gap: 40px;
+    }
+    .hero-text { max-width: 100%; }
+    .hl-name { font-size: clamp(56px, 14vw, 96px); }
+    .hl-sub  { font-size: clamp(16px, 3.6vw, 22px); margin-top: 18px; }
+    .hl-est  { font-size: 11px; margin-top: 12px; }
+    .hero-lede { font-size: 17px; margin-bottom: 32px; }
+    .hero-bottle {
+      height: auto;
+      max-height: none;
+      width: 100%;
+      order: 2;
+      aspect-ratio: 4/5;
+    }
+    .hero-bottle img {
+      transform: none;
+      height: 100%;
+      max-height: 70vh;
+      width: auto;
+      max-width: 100%;
+    }
+    .hero-meta { flex-wrap: wrap; gap: 24px 36px; padding-top: 22px; }
+    .hero-meta .cell { flex: 1 1 40%; min-width: 130px; }
+    .hero-meta .value { font-size: 18px; }
+    .hero-tag { position: relative; left: 0; bottom: 0; margin-top: 22px; }
+    .hero-tag .num { font-size: 48px; }
+    .hero-tag .info .name { font-size: 19px; }
+    .scroll-cue { display: none; }
+
+    .section { padding: 80px 22px; }
+    .section-head { margin-bottom: 50px; }
+    .section-head h2 { font-size: clamp(36px, 9vw, 56px); }
+    .section-head p { font-size: 16px; margin-top: 18px; }
+
+    .grid { grid-template-columns: 1fr; gap: 22px; }
+    .card-stage { aspect-ratio: 4/5; }
+    .card-info { padding: 22px 22px 24px; gap: 14px; }
+    .card-info h3 { font-size: 28px; }
+    .card-info .notes-line { font-size: 15px; }
+    .card-meta { padding: 0 22px 22px; gap: 14px; flex-wrap: wrap; font-size: 12px; }
+
+    .marquee { padding: 16px 0; }
+    .marquee-track { font-size: 18px; gap: 40px; }
+    .marquee-track span { gap: 40px; }
+
+    /* footer */
+    footer { padding: 70px 22px 32px; }
+    .footer-cta { margin-bottom: 50px; }
+    .footer-cta h3 { font-size: clamp(32px, 8vw, 52px); }
+    .footer-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 36px 28px;
+      padding-top: 40px;
+    }
+    .footer-bottom {
+      margin-top: 40px;
+      flex-direction: column;
+      gap: 12px;
+      text-align: center;
+      font-size: 10px;
+    }
+
+    /* modal */
+    .modal-overlay { padding: 16px; }
+    .modal { grid-template-columns: 1fr; max-height: 92vh; }
+    .modal-image { min-height: 260px; padding: 32px 24px; }
+    .modal-image img { max-height: 240px; }
+    .modal-body { padding: 32px 24px 36px; }
+    .modal-body h2 { font-size: 32px; }
+    .modal-body .desc { font-size: 15px; margin: 20px 0 24px; }
+    .modal-notes .row { grid-template-columns: 80px 1fr; gap: 14px; padding: 12px 0; }
+    .modal-notes .val { font-size: 15px; }
+    .size-pill { padding: 12px 10px; }
+    .size-pill .ml { font-size: 18px; }
+    .modal-cta { flex-direction: column; align-items: stretch; }
+    .modal-cta .btn { width: 100%; padding: 16px 20px; }
+    .btn { padding: 16px 24px; font-size: 10px; letter-spacing: .26em; }
+  }
+  @media (max-width: 540px) {
+    .hero { padding: 60px 18px 40px; gap: 32px; }
+    .hl-name { letter-spacing: .14em; }
+    .hero-lede { font-size: 16px; }
+    .hero-meta { gap: 18px 24px; }
+    .hero-meta .cell { flex: 1 1 100%; min-width: 0; }
+    .section { padding: 60px 18px; }
+    .section-head h2 { font-size: 38px; }
+    .footer-grid { grid-template-columns: 1fr; gap: 30px; padding-top: 32px; }
+    .footer-brand p { max-width: none; }
+    .marquee-track { font-size: 16px; gap: 28px; }
+    .marquee-track span { gap: 28px; }
+    .modal-image { min-height: 220px; padding: 24px 18px; }
+    .modal-image img { max-height: 200px; }
+    .modal-body { padding: 28px 20px 32px; }
+    .modal-body h2 { font-size: 28px; }
+    .modal-close { top: 14px; right: 14px; width: 38px; height: 38px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== NAV ===================== -->
+<header class="nav" id="nav" aria-hidden="true"></header>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero" id="top">
+  <div class="hero-text">
+    <span class="hero-eyebrow eyebrow"></span>
+    <h1 class="hero-logo">
+      <span class="hl-name">TAAF</span>
+      <span class="hl-sub">PARFUM</span>
+      <span class="hl-est">EST. 2024</span>
+    </h1>
+    <p class="hero-lede">A collection of two perfumes, one a bright fruit reverie, the other an opulent floral that lingers like an unfinished sentence. Composed slowly, worn intimately.</p>
+    <div class="hero-meta">
+      <div class="cell">
+        <span class="label">Composition</span>
+        <span class="value">Extrait de Parfum</span>
+      </div>
+      <div class="cell">
+        <span class="label">Concentration</span>
+        <span class="value">22 – 28 %</span>
+      </div>
+      <div class="cell">
+        <span class="label">Origine</span>
+        <span class="value">Atelier privé</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-bottle">
+    <img src="assets/silent-ways.png" alt="Hundred Silent Ways — burgundy parfum bottle with gold cap" />
+    <div class="hero-tag">
+      <div class="num">
+</div>
+      <div class="info">
+        <div class="name" style="text-align: center">     </div>
+        <div class="sub">      </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-cue">Scroll to discover</div>
+</section>
+
+<!-- marquee -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>Handcrafted</span>
+    <span>Limited edition</span>
+    <span>Hundred Silent Ways</span>
+    <span>Juicy Apple</span>
+    <span>TAAF Parfum</span>
+    <span>Luxury fragrance</span>
+    <span>Handcrafted</span>
+    <span>Limited edition</span>
+    <span>Hundred Silent Ways</span>
+    <span>Juicy Apple</span>
+    <span>TAAF Parfum</span>
+    <span>Luxury fragrance</span>
+  </div>
+</div>
+
+<!-- ===================== COLLECTION ===================== -->
+<section class="section collection" id="collection">
+  <div class="section-head fade-in">
+    <div class="hairline" style="margin-bottom: 26px;"><span></span></div>
+    <span class="eyebrow">The Collection · 2 Parfums</span>
+    <h2 class="display" style="margin-top: 22px;">Two scents.<br /><em>One quiet language.</em></h2>
+    <p>A diptych of contrasting moods, a fruit bright as morning, a floral deep as dusk. Each is poured by hand and rested before release.</p>
+  </div>
+
+  <div class="grid fade-in">
+
+    <!-- CARD 1 — Juicy Apple -->
+    <article class="card rose" data-perfume="juicyApple">
+      <div class="card-stage">
+        <img src="assets/juicy-apple.png" alt="Juicy Apple — translucent rose parfum bottle" />
+      </div>
+      <div class="card-info">
+        <div>
+          <h3>Juicy Apple</h3>
+          <div class="notes-line">Red apple, jasmine, soft musk.</div>
+        </div>
+        <button class="card-cta" type="button">Discover →</button>
+      </div>
+      <div class="card-meta">
+        <span><b>15 ml</b>&nbsp;500 ৳</span>
+        <span class="dot">·</span>
+        <span><b>30 ml</b>&nbsp;900 ৳</span>
+        <span class="dot">
+</span>
+        <span>
+</span>
+      </div>
+    </article>
+
+    <!-- CARD 2 — Hundred Silent Ways -->
+    <article class="card burgundy" data-perfume="silentWays">
+      <div class="card-stage">
+        <img src="assets/silent-ways.png" alt="Hundred Silent Ways — burgundy parfum bottle with gold cap" />
+      </div>
+      <div class="card-info">
+        <div>
+          <h3>Hundred Silent Ways</h3>
+          <div class="notes-line">Tuberose, gardenia, sandalwood.</div>
+        </div>
+        <button class="card-cta" type="button">Discover →</button>
+      </div>
+      <div class="card-meta">
+        <span><b>15 ml</b>&nbsp;500 ৳</span>
+        <span class="dot">·</span>
+        <span><b>30 ml</b>&nbsp;900 ৳</span>
+        <span class="dot">
+</span>
+        <span>
+</span>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- featured section removed -->
+
+<!-- maison/philosophy section removed entirely -->
+
+<!-- ===================== FOOTER ===================== -->
+<footer id="order">
+  <div class="footer-inner">
+    <div class="footer-cta fade-in">
+      <div class="hairline" style="margin-bottom: 24px;"><span></span></div>
+      <span class="eyebrow">Order TAAF Parfum</span>
+      <h3 class="display">Order yours<br /><em>today.</em></h3>
+      <a class="btn" href="https://www.facebook.com/taafperfumes" target="_blank" rel="noopener noreferrer">
+        Open Facebook
+        <span class="arr">→</span>
+      </a>
+    </div>
+
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="brand"><span class="name">TAAF</span><span class="sub">PARFUM</span><span class="est">EST. 2024</span></div>
+        <p>A small house of parfums composed slowly, worn intimately, and shared one bottle at a time.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Collection</h5>
+        <ul>
+          <li><a href="#collection">Juicy Apple </a></li>
+          <li><a href="#collection">Hundred Silent Ways </a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Order</h5>
+        <ul>
+          <li><a href="#order">Place an order</a></li>
+          <li><a href="#order">Sizes &amp; pricing</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Connect</h5>
+        <ul>
+          <li><a href="https://www.facebook.com/taafperfumes" target="_blank" rel="noopener noreferrer">Facebook</a></li>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Tiktok</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2024 TAAF Parfum. Handcrafted with care.</span>
+      <span>Terms · Privacy · Contact</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ===================== MODAL ===================== -->
+<div class="modal-overlay" id="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="modal-close" id="modal-close" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round">
+        <path d="M5 5 L19 19 M19 5 L5 19" />
+      </svg>
+    </button>
+    <div class="modal-image">
+      <img id="modal-img" src="" alt="" />
+    </div>
+    <div class="modal-body">
+      <span class="label" id="modal-label">TAAF Collection · N°—</span>
+      <h2 id="modal-title"></h2>
+      <p class="desc" id="modal-desc"></p>
+
+      <div class="modal-notes">
+        <div class="row"><span class="tier">Top</span><span class="val" id="modal-top"></span></div>
+        <div class="row"><span class="tier">Heart</span><span class="val" id="modal-heart"></span></div>
+        <div class="row"><span class="tier">Base</span><span class="val" id="modal-base"></span></div>
+      </div>
+
+      <div class="size-row">
+        <div class="label">Select size</div>
+        <div class="sizes" id="sizes">
+          <button class="size-pill active" data-size="15ml" data-price="500">
+            <span class="ml">15 ml</span>
+            <span class="pr">500 ৳</span>
+          </button>
+          <button class="size-pill" data-size="30ml" data-price="900">
+            <span class="ml">30 ml</span>
+            <span class="pr">900 ৳</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-cta">
+        <a class="btn" id="modal-order" href="https://www.facebook.com/taafperfumes" target="_blank" rel="noopener noreferrer">
+          Order via Facebook
+          <span class="arr">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ============ DATA ============
+  const perfumes = {
+    juicyApple: {
+      number: "N°01",
+      title: "Juicy Apple",
+      image: "assets/juicy-apple.png",
+      desc: "A bright burst of crisp red apple woven through litchi and may rose. A clean, youthful reverie that lingers like an afternoon you didn't want to end.",
+      top: "Red Apple · Litchi · Citrus",
+      heart: "Jasmine · Wild Berries · May Rose",
+      base: "Musk · Amber · Soft Woods"
+    },
+    silentWays: {
+      number: "N°02",
+      title: "Hundred Silent Ways",
+      image: "assets/silent-ways.png",
+      desc: "An elegant, sophisticated composition where creamy florals meet warm, powdery depth. Inspired by Nishane's modern classic — composed for evening, worn close to skin.",
+      top: "Tuberose · Peach · Mandarin Orange",
+      heart: "Gardenia · Jasmine · Orris",
+      base: "Vanilla · Sandalwood · Vetiver"
+    }
+  };
+
+  // ============ MODAL ============
+  const modal = document.getElementById("modal");
+  const modalClose = document.getElementById("modal-close");
+
+  function openModal(key) {
+    const p = perfumes[key];
+    if (!p) return;
+    document.getElementById("modal-img").src = p.image;
+    document.getElementById("modal-img").alt = p.title;
+    document.getElementById("modal-label").textContent = "TAAF Collection · " + p.number;
+    document.getElementById("modal-title").innerHTML = p.title.replace(/(\w+)$/, "<em>$1</em>");
+    document.getElementById("modal-desc").textContent = p.desc;
+    document.getElementById("modal-top").textContent = p.top;
+    document.getElementById("modal-heart").textContent = p.heart;
+    document.getElementById("modal-base").textContent = p.base;
+    // reset size
+    document.querySelectorAll(".size-pill").forEach((b, i) => {
+      b.classList.toggle("active", i === 0);
+    });
+    modal.classList.add("active");
+    document.body.style.overflow = "hidden";
+  }
+  function closeModal() {
+    modal.classList.remove("active");
+    document.body.style.overflow = "";
+  }
+
+  document.querySelectorAll("[data-perfume]").forEach((el) => {
+    el.addEventListener("click", () => openModal(el.dataset.perfume));
+  });
+  modalClose.addEventListener("click", closeModal);
+  modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+  // size pills
+  document.getElementById("sizes").addEventListener("click", (e) => {
+    const btn = e.target.closest(".size-pill");
+    if (!btn) return;
+    document.querySelectorAll(".size-pill").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+  });
+
+  // ============ NAV scroll state ============
+  const nav = document.getElementById("nav");
+  window.addEventListener("scroll", () => {
+    nav.classList.toggle("scrolled", window.scrollY > 60);
+  });
+
+  // ============ Fade in on scroll ============
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (en.isIntersecting) {
+        en.target.classList.add("visible");
+        io.unobserve(en.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll(".fade-in").forEach((el) => io.observe(el));
+</script>
+</body>
+</html>
